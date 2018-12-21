@@ -28,19 +28,13 @@ type Person struct {
 var people []Person
 
 func main() {
-	// constr := fmt.Sprintf("server=%s;user id=%s;password=%s;port=%d;database=%s;", server, user, password, port, database)
-	// fmt.Println(constr)
-
-	// RowCount, ErrRead := readdb(constr)
-	// fmt.Printf("Record count = %d error %s\n", RowCount, ErrRead)
-
 	router := mux.NewRouter()
 
 	router.HandleFunc("/people", GetPeopleEndpoint).Methods("GET")
 	router.HandleFunc("/people/{id}", GetPersonEndpoint).Methods("GET")
 	router.HandleFunc("/people/{name}+{location}", CreatePersonEndpoint).Methods("POST")
 	router.HandleFunc("/people/{id}", DeletePersonEndpoint).Methods("DELETE")
-	log.Fatal(http.ListenAndServe(":8000", router))
+	log.Fatal(http.ListenAndServeTLS(":8000", "server.cert", "server.key", router))
 
 }
 
