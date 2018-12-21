@@ -10,3 +10,11 @@ https://github.com/denji/golang-tls
 
 testowanie codu ala rspec
 https://github.com/poy/onpar
+
+kontenery
+https://medium.com/@durgaprasadbudhwani/step-by-step-guide-to-deploy-golang-application-on-azure-web-app-46ba3befb4c0
+
+apigee
+https://gravitee.io/
+
+tgorgon@itcon.pl

@@ -33,6 +33,7 @@ func main() {
 	router.HandleFunc("/people", GetPeopleEndpoint).Methods("GET")
 	router.HandleFunc("/people/{id}", GetPersonEndpoint).Methods("GET")
 	router.HandleFunc("/people/{name}+{location}", CreatePersonEndpoint).Methods("POST")
+	router.HandleFunc("/people/mod/{id}+{name}+{location}", UpdatePersonEndpoint).Methods("POST")
 	router.HandleFunc("/people/{id}", DeletePersonEndpoint).Methods("DELETE")
 	log.Fatal(http.ListenAndServeTLS(":8000", "server.cert", "server.key", router))
 
@@ -285,6 +286,27 @@ func CreatePersonEndpoint(w http.ResponseWriter, r *http.Request) {
 	people = append(people, person)
 	json.NewEncoder(w).Encode(people)
 	fmt.Println(people)
+}
+
+func UpdatePersonEndpoint(w http.ResponseWriter, r *http.Request) {
+	constr := fmt.Sprintf("server=%s;user id=%s;password=%s;port=%d;database=%s;", server, user, password, port, database)
+	params := mux.Vars(r)
+	var person Person
+	_ = json.NewDecoder(r.Body).Decode(&person)
+	person.ID = params["id"]
+	person.Name = params["name"]
+	person.Location = params["location"]
+
+	modid, _ := strconv.ParseInt(params["id"], 10, 32)
+	oldLoc, oldName, errorupdatev2 := updatedbv2(constr, params["name"], params["location"], modid)
+	if errorupdatev2 != nil {
+		log.Println("Update error", errorupdatev2.Error())
+	}
+	fmt.Printf("Old Location=%s old Name=%s\n", oldLoc, oldName)
+	RowCount, _ := readdb(constr)
+	fmt.Printf("Modified record = %d form %d records, Name=%s, Location=%s\n", modid, RowCount, params["name"], params["location"])
+	json.NewEncoder(w).Encode(people)
+	fmt.Println()
 }
 
 func DeletePersonEndpoint(w http.ResponseWriter, r *http.Request) {
