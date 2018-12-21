@@ -1,0 +1,77 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Komunikator</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <style>
+      ul#messages        { list-style: none; }
+      ul#messages li     { margin-bottom: 2px; }
+      ul#messages li img { margin-right: 10px; }
+    </style>
+  </head>
+  <body>
+
+    <div class="container">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <ul id="messages"></ul>
+        </div>
+      </div>
+      <form id="chatbox" role="form">
+        <div class="form-group">
+          <label for="message">Wyślij wiadomość jako {{.UserData.name}}</label> lub <a href="/logout">wyloguj się</a>.
+          <textarea id="message" class="form-control"></textarea>
+        </div>
+        <input type="submit" value="Wyślij" class="btn btn-default" />
+      </form>
+    </div>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script>
+
+      $(function(){
+
+        var socket = null;
+        var msgBox = $("#chatbox textarea");
+        var messages = $("#messages");
+
+        $("#chatbox").submit(function(){
+
+          if (!msgBox.val()) return false;
+          if (!socket) {
+            alert("Błąd: Brak połączenia z serwerem.");
+            return false;
+          }
+
+          socket.send(JSON.stringify({"Message": msgBox.val()}));
+          msgBox.val("");
+          return false;
+
+        });
+
+        if (!window["WebSocket"]) {
+          alert("Błąd: Twoja przeglądarka nie obsługuje technologii WebScocket.")
+        } else {
+          socket = new WebSocket("ws://{{.Host}}/room");
+          socket.onclose = function() {
+            //alert("Połączenie zostało zamknięte.");
+          }
+          socket.onmessage = function(e) {
+            var msg = JSON.parse(e.data);
+            messages.append(
+              $("<li>").append(
+                $("<img>").attr("title", msg.Name).css({
+                  width:50,
+                  verticalAlign:"middle"
+                }).attr("src", msg.AvatarURL),
+                $("<span>").text(msg.Message)
+              )
+            );
+          }
+        }
+
+      });
+
+    </script>
+  </body>
+</html>

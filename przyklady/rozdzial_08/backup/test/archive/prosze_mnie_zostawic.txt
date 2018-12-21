@@ -1,0 +1,1 @@
+Proszę zostawić tu ten plik - dostępność katalogu archive jest ważna dla testów, a ten plik zapewnia, że katalog zostanie uwzględniony przez system wersjonowania kod.

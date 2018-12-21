@@ -1,0 +1,6 @@
+application: goapp-odpowiedzi
+dispatch:
+  - url: "*/api/*"
+    module: api
+  - url: "*/*"
+    module: web
